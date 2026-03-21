@@ -1,12 +1,21 @@
 import express from "express";
 import mongoose from "mongoose";
+import tasksRoute from "../backend/routes/tasksRoute.js"
+import dotenv from "dotenv";
+import cors from "cors";
+
+dotenv.config();
 
 const PORT = process.env.PORT || 3000;
 
 const app = express();
 
+app.use(express.json());
+app.use('/api/tasks',tasksRoute);
+app.use(cors());
+
 mongoose
-    .connect('mongodb://127.0.0.1:27017/task_app')
+    .connect(process.env.MONGO_URI)
     .then(()=>console.log('Connected to database'))
     .catch((err)=> console.log(`Error: ${err}`));
 
