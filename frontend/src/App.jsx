@@ -1,4 +1,4 @@
-import { useState, useEffect, use } from "react";
+import { useState, useEffect } from "react";
 
 function App(){
 
@@ -62,6 +62,24 @@ function App(){
     }
   }
 
+  const handleDelete = async(id)=> {
+    try {
+      const res = await fetch(`http://localhost:5000/api/tasks/${id}`,
+        {
+          method: "DELETE",
+        }
+      )
+
+      if(!res.ok) throw new Error("Failed to delete task");
+
+      setTasks(tasks.filter((task)=>task._id !== id ));
+    } catch (err) {
+      console.log("Error deleting task:", err);
+      setError("Error deleting task");
+    }
+
+  }
+
 
   return(
     <div className="p-6 bg-gray-300 ">
@@ -96,21 +114,28 @@ function App(){
           >{loading? "Creating..." : "Add Task"}</button>
         </form>
       </div>
-      <div className="columns-3 py-6 mt-2 bg-black rounded-2xl text-white text-2xl font-bold px-6">
+      <div className="columns-4 py-6 mt-2 bg-black rounded-2xl text-white text-2xl font-bold px-6">
         <h1>Title</h1>
         <h1>Description</h1>
         <h1>Completed</h1>
+        <h1>Action</h1>
       </div>
       {tasks.length === 0 ? (
         <p>No task Found</p>
       ):(
       
         tasks.map((task)=>(
-          <div key={task._id} className="px-6 text-white columns-3 py-6 mt-2 bg-black  border p-3 rounded mb-2 shadow-sm" >
+          <div key={task._id} className="px-6 text-white columns-4 py-6 mt-2 bg-black  border p-3 rounded mb-2 shadow-sm" >
            
             <h1 className="font-semibold"><span>{task.title}</span></h1>
             <p> {task.description}</p>
             <p className="text-sm text-gray-500"> {task.completed? "Completed✅" : "Not Completed ❌" }</p>
+            <button
+              onClick={() => handleDelete(task._id)}
+              className="bg-red-500 text-white px-2 py-1 rounded mt-2"
+            >
+              Delete
+            </button>
           </div>
           
         ))
