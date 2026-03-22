@@ -80,6 +80,34 @@ function App(){
 
   }
 
+  const handleToggle = async(task)=>{
+    try
+      {const res = await fetch(`http://localhost:5000/${task._id}`,{
+      
+        method:"PATCH",
+        
+        headers:{
+            "Content-Type":"application/json",
+        },
+        body:JSON.stringify({
+          completed:!task.completed
+        }),
+      });
+
+    
+    if(!res.ok) throw new Error("Failed to update task")
+
+    const updatedTask = await res.json()
+
+    setTasks(tasks.map(t => t._id === updatedTask._id ? updatedTask : t) )
+  } catch(err){
+    console.log(err);
+    setError("Error Updating task")
+  }
+};
+
+
+
 
   return(
     <div className="p-6 bg-gray-300 ">
@@ -129,7 +157,9 @@ function App(){
            
             <h1 className="font-semibold"><span>{task.title}</span></h1>
             <p> {task.description}</p>
-            <p className="text-sm text-gray-500"> {task.completed? "Completed✅" : "Not Completed ❌" }</p>
+            <button onClick={()=>handleToggle(task)} className={task.completed ? "text-green-400" : "text-red-400"}>
+              {task.completed ? "Completed ✅" : "Not Completed ❌"}
+            </button>
             <button
               onClick={() => handleDelete(task._id)}
               className="bg-red-500 text-white px-2 py-1 rounded mt-2"
